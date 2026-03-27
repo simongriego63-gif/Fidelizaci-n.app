@@ -270,19 +270,19 @@
             });
         }
 
-        // --- FUNCIÓN MÁGICA: DIBUJAR LAS TAZAS ---
+                // --- FUNCIÓN MÁGICA: DIBUJAR LAS TAZAS (CORREGIDA) ---
         function renderizarTazas(puntosActuales) {
             const totalTazas = 10;
             const grid = document.getElementById('gridSellos');
             grid.innerHTML = ''; 
 
             for (let i = 1; i <= totalTazas; i++) {
-                // Creamos el contenedor del SVG
                 const contenedorSvg = document.createElement('div');
                 contenedorSvg.innerHTML = obtenerSvgTaza();
-                const svgElement = contenedorSvg.firstChild;
                 
-                // Si la taza está marcada (i <= puntos), le agregamos la clase 'filled'
+                // EL ARREGLO: Buscamos específicamente la etiqueta 'svg', ignorando espacios rotos
+                const svgElement = contenedorSvg.querySelector('svg'); 
+                
                 if (i <= puntosActuales) {
                     svgElement.classList.add('filled');
                 }
@@ -304,6 +304,7 @@
                 uiPremio.style.fontWeight = "400";
             }
         }
+
 
         // Esta función devuelve el código SVG puro de una taza de café minimalista
         function obtenerSvgTaza() {
