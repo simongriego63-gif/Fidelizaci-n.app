@@ -1,1 +1,239 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Club Café</title>
+    <style>
+        :root {
+            --bg-color: #1a1a1a;
+            --brand-blue: #0028FF;
+            --white: #ffffff;
+            --text-dark: #333333;
+            --circle-border: #cccccc;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            color: var(--white);
+        }
+
+        /* VISTA 1: REGISTRO */
+        #pantallaRegistro {
+            text-align: center;
+            width: 100%;
+            max-width: 340px;
+            display: none;
+        }
+        #pantallaRegistro h2 { color: var(--brand-blue); margin-bottom: 5px; }
+        .input-box {
+            width: 100%; padding: 15px; border-radius: 8px; border: none;
+            margin: 10px 0; font-size: 16px; box-sizing: border-box;
+        }
+        .btn-crear {
+            background-color: var(--brand-blue); color: white; border: none;
+            padding: 15px; width: 100%; border-radius: 25px; font-size: 18px;
+            font-weight: bold; cursor: pointer; margin-top: 10px;
+        }
+
+        /* VISTA 2: LA TARJETA DIGITAL */
+        #pantallaTarjeta { width: 100%; max-width: 340px; display: none; }
+        .wallet-card { background-color: var(--brand-blue); border-radius: 16px; overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.5); display: flex; flex-direction: column; }
+        .card-header { padding: 20px; display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-size: 20px; font-weight: 900; letter-spacing: -0.5px; }
+        .user-nickname { font-size: 14px; text-align: right; }
+        .user-nickname span { display: block; font-size: 10px; opacity: 0.7; text-transform: uppercase; }
+
+        .stamps-container { background-color: var(--white); margin: 0 15px; padding: 20px 15px; border-radius: 12px; color: var(--text-dark); }
+        .stamps-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-bottom: 15px; }
+        
+        .stamp-circle { aspect-ratio: 1; border-radius: 50%; border: 1.5px solid var(--circle-border); display: flex; justify-content: center; align-items: center; font-size: 18px; transition: all 0.3s ease; }
+        .stamp-circle.filled { background-color: var(--brand-blue); border-color: var(--brand-blue); color: var(--white); }
+        .stamps-text { text-align: center; font-size: 11px; color: #666; margin: 0; }
+
+        .info-row { display: flex; justify-content: space-between; padding: 15px 20px; font-size: 14px; }
+        .info-label { font-size: 10px; opacity: 0.8; text-transform: uppercase; margin-bottom: 2px; }
+        .info-value { font-weight: bold; font-size: 16px; }
+
+        .qr-section { background-color: var(--brand-blue); padding: 10px 20px 30px; display: flex; flex-direction: column; align-items: center; }
+        .qr-box { background-color: var(--white); padding: 10px; border-radius: 8px; margin-bottom: 10px; }
+        .qr-box img { display: block; width: 120px; height: 120px; }
+        .user-id { font-size: 12px; opacity: 0.8; letter-spacing: 1px; font-family: monospace; }
+        
+        #cargando { font-size: 18px; text-align: center; }
+    </style>
+</head>
+<body>
+
+    <div id="cargando">Cargando tarjeta...</div>
+
+    <div id="pantallaRegistro">
+        <h2>¡Únete al Club!</h2>
+        <p>Ingresa tus datos para empezar a sumar.</p>
+        <input type="text" id="inputNombre" class="input-box" placeholder="Tu Nombre o Apodo" required>
+        <input type="tel" id="inputCelular" class="input-box" placeholder="Tu número de WhatsApp" required>
+        <button class="btn-crear" onclick="ingresarTarjeta()">Ingresar / Crear Tarjeta</button>
+    </div>
+
+    <div id="pantallaTarjeta">
+        <div class="wallet-card">
+            <div class="card-header">
+                <div class="logo">TU CAFÉ™</div>
+                <div class="user-nickname">
+                    <span>Apodo</span>
+                    <strong id="displayNombre">...</strong>
+                </div>
+            </div>
+            <div class="stamps-container">
+                <div class="stamps-grid" id="gridSellos"></div>
+                <p class="stamps-text">Cuando completes 10, recibe una bebida de regalo.</p>
+            </div>
+            <div class="info-row">
+                <div><div class="info-label">Premios 🎁</div><div class="info-value" id="displayPremio">Sin Premios</div></div>
+                <div style="text-align: right;"><div class="info-label">Puntos</div><div class="info-value" id="displayPuntos">0</div></div>
+            </div>
+            <div class="qr-section">
+                <div class="qr-box">
+                    <img id="qrImage" src="" alt="QR Cliente">
+                </div>
+                <div class="user-id">TEL: <span id="displayId">...</span></div>
+            </div>
+        </div>
+        <button onclick="cerrarSesion()" style="margin-top: 20px; background: none; color: #888; border: none; width: 100%; text-decoration: underline;">Cerrar sesión (Borrar mi tarjeta de este celular)</button>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+        // Importamos getDoc y setDoc para poder leer y escribir con el número de teléfono
+        import { getFirestore, doc, setDoc, getDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCaqJraAXeZ8F4zCd9GUIdNIHhfU7FMzJk",
+            authDomain: "club-cafe-app.firebaseapp.com",
+            databaseURL: "https://club-cafe-app-default-rtdb.firebaseio.com",
+            projectId: "club-cafe-app",
+            storageBucket: "club-cafe-app.firebasestorage.app",
+            messagingSenderId: "1007849307452",
+            appId: "1:1007849307452:web:2472f6b2cab7deeae53239",
+            measurementId: "G-6314S7TS0T"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        const uiCargando = document.getElementById('cargando');
+        const uiRegistro = document.getElementById('pantallaRegistro');
+        const uiTarjeta = document.getElementById('pantallaTarjeta');
+
+        let celularLocal = localStorage.getItem('miTarjetaCafeTEL');
+
+        if (celularLocal) {
+            abrirTarjeta(celularLocal);
+        } else {
+            uiCargando.style.display = 'none';
+            uiRegistro.style.display = 'block';
+        }
+
+        // FUNCIÓN MEJORADA: CREAR O RECUPERAR USUARIO
+        window.ingresarTarjeta = async function() {
+            const nombre = document.getElementById('inputNombre').value.trim();
+            let celular = document.getElementById('inputCelular').value.trim();
+
+            if(!nombre || !celular) return alert("Por favor completa ambos datos");
+
+            // Limpiamos el número para que solo queden dígitos (por si pone guiones o espacios)
+            celular = celular.replace(/\D/g,'');
+            if(celular.length < 8) return alert("Ingresa un número válido");
+
+            uiRegistro.style.display = 'none';
+            uiCargando.style.display = 'block';
+            uiCargando.innerText = "Buscando tu tarjeta...";
+
+            try {
+                // Apuntamos a la carpeta del cliente usando su celular
+                const docRef = doc(db, "clientes", celular);
+                const docSnap = await getDoc(docRef);
+
+                if (docSnap.exists()) {
+                    // Si ya existe, le actualizamos el nombre por si cambió
+                    await setDoc(docRef, { nombre: nombre }, { merge: true });
+                } else {
+                    // Si es nuevo, lo creamos con 0 puntos
+                    await setDoc(docRef, { nombre: nombre, puntos: 0 });
+                }
+                
+                // Guardamos el celular en la memoria del navegador
+                localStorage.setItem('miTarjetaCafeTEL', celular);
+                abrirTarjeta(celular);
+            } catch (e) {
+                console.error("Error:", e);
+                alert("Hubo un error de conexión.");
+                uiCargando.style.display = 'none';
+                uiRegistro.style.display = 'block';
+            }
+        }
+
+        function abrirTarjeta(celular) {
+            uiCargando.style.display = 'none';
+            uiRegistro.style.display = 'none';
+            uiTarjeta.style.display = 'block';
+
+            // El QR ahora contiene el número de celular del cliente
+            document.getElementById('qrImage').src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${celular}`;
+            
+            // Mostramos el celular ofuscado (ej: ******1234) por privacidad
+            let ultimos4 = celular.slice(-4);
+            document.getElementById('displayId').innerText = `******${ultimos4}`;
+
+            // Escuchamos la base de datos
+            onSnapshot(doc(db, "clientes", celular), (docSnap) => {
+                if (docSnap.exists()) {
+                    const datos = docSnap.data();
+                    document.getElementById('displayNombre').innerText = datos.nombre;
+                    renderizarPuntos(datos.puntos);
+                } else {
+                    cerrarSesion(); 
+                }
+            });
+        }
+
+        function renderizarPuntos(puntosActuales) {
+            const totalPuntos = 10;
+            const grid = document.getElementById('gridSellos');
+            grid.innerHTML = ''; 
+
+            for (let i = 1; i <= totalPuntos; i++) {
+                const circulo = document.createElement('div');
+                circulo.classList.add('stamp-circle');
+                if (i <= puntosActuales) {
+                    circulo.classList.add('filled');
+                    circulo.innerHTML = '✓';
+                }
+                grid.appendChild(circulo);
+            }
+
+            document.getElementById('displayPuntos').innerText = puntosActuales;
+            if(puntosActuales >= totalPuntos) {
+                document.getElementById('displayPremio').innerText = "1 Bebida Gratis";
+                document.getElementById('displayPremio').style.color = "#FFD700";
+            } else {
+                document.getElementById('displayPremio').innerText = "Sin Premios";
+                document.getElementById('displayPremio').style.color = "var(--white)";
+            }
+        }
+
+        window.cerrarSesion = function() {
+            localStorage.removeItem('miTarjetaCafeTEL');
+            location.reload();
+        }
+    </script>
+</body>
+</html>
 
