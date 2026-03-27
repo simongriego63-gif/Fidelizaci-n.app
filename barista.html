@@ -4,167 +4,182 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Caja - Club Café</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/html5-qrcode"></script>
     <style>
         :root {
-            /* Paleta Azul y Blanco Moderno */
-            --bg-color: #f5f5f7; /* Gris muy claro, tipo Apple */
+            /* Paleta Cálida y Azul Marino Pacífico */
+            --bg-warm: #FAF5F0; /* Crema suave y cálido de fondo */
             --card-white: #ffffff;
-            --brand-blue: #0028FF; /* Azul eléctrico vibrancy */
-            --brand-blue-gradient: linear-gradient(135deg, #0028FF 0%, #001CC7 100%);
-            --text-main: #1d1d1f;
-            --text-secondary: #86868b;
-            --border-light: #e6e6e6;
-            --glass-bg: rgba(255, 255, 255, 0.7);
+            
+            --brand-marine: #1A4D7C; /* Azul marino pacífico y serio */
+            --brand-marine-gradient: linear-gradient(135deg, #1A4D7C 0%, #0D3153 100%);
+            
+            --text-main: #2C3E50; /* Gris azulado oscuro para textos */
+            --text-secondary: #7F8C8D; /* Gris suave para textos secundarios */
+            
+            --border-warm: #E0D7D0; /* Borde sutil en tono cálido */
+            --glass-bg: rgba(255, 255, 255, 0.85); /* Vidrio para el modal central */
         }
 
         body {
-            background-color: var(--bg-color);
+            background-color: var(--bg-warm);
             color: var(--text-main);
-            font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            font-family: 'Poppins', sans-serif; /* Cambio de tipografía */
             text-align: center; margin: 0; padding: 0;
             display: flex; flex-direction: column; align-items: center;
             min-height: 100vh;
         }
 
-        /* Contenedor principal para centrar tarjetas */
         .main-container {
             width: 100%; max-width: 400px; padding: 20px; box-sizing: border-box;
             display: flex; flex-direction: column; align-items: center;
         }
 
-        h1 { font-weight: 700; font-size: 24px; margin: 10px 0 20px 0; color: var(--brand-blue); }
+        h1 { font-weight: 700; font-size: 24px; margin: 10px 0 20px 0; color: var(--brand-marine); }
 
-        /* Estilo de Tarjeta Moderna (Modern Card style de image_7) */
         .modern-card {
             background-color: var(--card-white);
-            border-radius: 28px; /* Súper redondeado */
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05); /* Sombra suave */
-            padding: 25px; width: 100%; box-sizing: border-box;
+            border-radius: 28px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04); /* Sombra aún más suave */
+            padding: 30px 25px; width: 100%; box-sizing: border-box;
             margin-bottom: 20px;
+            border: 1px solid rgba(224, 215, 208, 0.5); /* Borde cálido muy sutil */
         }
 
-        /* PANTALLA DE SEGURIDAD (PIN) - Fondo blanco total */
+        /* --- LOGIN (PIN) --- */
         #pantallaLogin {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background-color: var(--card-white); z-index: 2000;
+            background-color: var(--bg-warm); z-index: 2000;
             display: flex; flex-direction: column; justify-content: center; align-items: center;
             padding: 40px; box-sizing: border-box;
         }
         
         .pin-input {
-            padding: 20px; border-radius: 16px; border: 2px solid var(--border-light); font-size: 32px;
+            padding: 20px; border-radius: 16px; border: 2px solid var(--border-warm); font-size: 32px;
             text-align: center; width: 100%; max-width: 200px; margin-bottom: 30px; letter-spacing: 10px;
-            font-weight: bold; color: var(--text-main); font-family: monospace;
-            transition: border-color 0.3s;
+            font-weight: bold; color: var(--brand-marine); font-family: monospace;
+            background-color: var(--card-white);
+            transition: all 0.3s;
         }
-        .pin-input:focus { border-color: var(--brand-blue); outline: none; }
+        .pin-input:focus { border-color: var(--brand-marine); outline: none; box-shadow: 0 0 10px rgba(26,77,124,0.1); }
 
-        /* PANTALLA DE BÚSQUEDA */
+        /* --- BÚSQUEDA --- */
         #reader {
             width: 100%; border-radius: 20px; overflow: hidden; border: none;
             background-color: #000; margin-bottom: 20px;
             box-shadow: inset 0 0 20px rgba(0,0,0,0.3);
         }
         
-        .separador { margin: 25px 0; color: var(--text-secondary); font-size: 11px; text-transform: uppercase; letter-spacing: 2px; font-weight: 600;}
+        .separador { margin: 30px 0 20px 0; color: var(--text-secondary); font-size: 11px; text-transform: uppercase; letter-spacing: 2px; font-weight: 600;}
         
-        .input-manual-group { display: flex; gap: 10px; }
+        /* Layout cambiado: Input arriba, Botón abajo */
+        .input-manual-group { display: flex; flex-direction: column; gap: 12px; width: 100%;}
         .input-manual-group input {
-            flex: 1; padding: 18px; border-radius: 14px; border: 1.5px solid var(--border-light);
-            font-size: 16px; background-color: #fcfcfc; color: var(--text-main); transition: all 0.2s;
+            width: 100%; padding: 18px; border-radius: 14px; border: 1.5px solid var(--border-warm);
+            font-size: 16px; background-color: var(--card-white); color: var(--text-main); transition: all 0.2s;
+            box-sizing: border-box;
         }
-        .input-manual-group input:focus { border-color: var(--brand-blue); background-color: #fff;}
-        .input-manual-group button {
-            background-color: #e6e6e6; color: var(--text-main); border: none; padding: 0 25px; border-radius: 14px; font-weight: 600; cursor: pointer; transition: background 0.2s;
+        .input-manual-group input:focus { border-color: var(--brand-marine); background-color: #fff;}
+        
+        /* Botón buscar ahora abajo y gris cálido */
+        .btn-buscar-manual {
+            width: 100%; background-color: #E6E0DA; color: var(--brand-marine); border: none; padding: 16px; border-radius: 14px; font-weight: 600; cursor: pointer; transition: background 0.2s; font-size: 15px;
         }
-        .input-manual-group button:active { background-color: #dcdcdc; }
+        .btn-buscar-manual:active { background-color: #DCD6CF; }
 
-        /* PANTALLA DE ACCIONES (Modal Glassmorphism de image_7) */
+        /* --- ACCIONES (MODAL CENTRAL) --- */
         #pantallaAcciones {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.5); z-index: 1000;
-            display: none; align-items: flex-end; justify-content: center;
+            background: rgba(13, 49, 83, 0.4); /* Fondo azul marino translúcido pacífico */
+            z-index: 1000;
+            display: none; 
+            align-items: center; /* CENTRADO VERTICAL */
+            justify-content: center; /* CENTRADO HORIZONTAL */
+            padding: 20px; box-sizing: border-box;
         }
         
         .acciones-content {
-            width: 100%; max-width: 400px;
+            width: 100%; max-width: 360px; /* Ancho de tarjeta central */
             background: var(--glass-bg);
-            backdrop-filter: blur(20px) saturate(180%); /* Efecto vidrio de image_7 */
+            backdrop-filter: blur(20px) saturate(180%);
             -webkit-backdrop-filter: blur(20px) saturate(180%);
-            border-top-left-radius: 32px; border-top-right-radius: 32px;
+            border-radius: 28px; /* Redondeado completo */
             padding: 30px; box-sizing: border-box;
-            box-shadow: 0 -10px 40px rgba(0,0,0,0.1);
-            color: var(--text-main); text-align: left;
-            border: 1px solid rgba(255,255,255,0.3);
-            animation: slideUp 0.3s ease-out;
+            box-shadow: 0 15px 50px rgba(0,0,0,0.15); /* Sombra de modal central */
+            color: var(--text-main); text-align: center; /* Texto centrado en el modal */
+            border: 1px solid rgba(255,255,255,0.4);
+            
+            /* Animación de aparición central (fade + scale) */
+            animation: modalPop 0.3s ease-out;
         }
-        @keyframes slideUp { from {transform: translateY(100%);} to {transform: translateY(0);} }
+        @keyframes modalPop { from {opacity: 0; transform: scale(0.9);} to {opacity: 1; transform: scale(1);} }
 
-        .cliente-info-header { display: flex; align-items: center; gap: 15px; margin-bottom: 20px; }
-        .cliente-avatar { width: 50px; height: 50px; background-color: var(--border-light); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 700; color: var(--text-secondary); }
-        .cliente-textos { flex: 1; }
+        /* Reorganización info cliente para centrado */
+        .cliente-info-header { display: flex; flex-direction: column; align-items: center; gap: 12px; margin-bottom: 25px; }
+        .cliente-avatar { width: 60px; height: 60px; background-color: var(--border-warm); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: 700; color: var(--brand-marine); border: 2px solid #fff; }
+        .cliente-textos { flex: none; text-align: center; }
         .cliente-nombre { font-size: 20px; font-weight: 700; color: var(--text-main); }
-        .cliente-tel { color: var(--text-secondary); font-size: 13px; font-family: monospace; }
+        .cliente-tel { color: var(--text-secondary); font-size: 13px; font-family: monospace; margin-top: 2px; display: block;}
         
         .estado-sellos-container {
-            background-color: var(--card-white); border-radius: 20px; padding: 20px; margin-bottom: 25px;
-            display: flex; justify-content: space-between; align-items: center;
-            border: 1px solid var(--border-light);
+            background-color: rgba(26, 77, 124, 0.03); border-radius: 20px; padding: 20px; margin-bottom: 25px;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            border: 1px solid rgba(26, 77, 124, 0.08);
         }
-        .estado-sellos-texto { font-size: 14px; color: var(--text-secondary); }
-        .estado-sellos-numero { color: var(--brand-blue); font-weight: 700; font-size: 36px; line-height: 1;}
-        .estado-sellos-numero span { font-size: 16px; opacity: 0.5; font-weight: 400;}
+        .estado-sellos-texto { font-size: 13px; color: var(--text-secondary); margin-bottom: 5px;}
+        .estado-sellos-numero { color: var(--brand-marine); font-weight: 700; font-size: 42px; line-height: 1;}
+        .estado-sellos-numero span { font-size: 18px; opacity: 0.5; font-weight: 400;}
 
-        /* ESTILO DE BOTONES MODERNOS REDONDEADOS (De image_7) */
-        .btn-stack { display: flex; flex-direction: column; gap: 12px; }
+        /* --- BOTONES MODERNOS --- */
+        .btn-stack { display: flex; flex-direction: column; gap: 12px; width: 100%;}
         .btn {
-            width: 100%; padding: 18px; border-radius: 20px; /* Súper redondeado */
+            width: 100%; padding: 18px; border-radius: 18px;
             border: none; font-size: 16px; font-weight: 600; cursor: pointer;
-            transition: all 0.2s ease;
+            transition: all 0.2s ease; font-family: 'Poppins', sans-serif;
         }
         
-        .btn-blue { background: var(--brand-blue-gradient); color: white; box-shadow: 0 4px 15px rgba(0,40,255,0.2); }
-        .btn-blue:active { transform: scale(0.97); box-shadow: 0 2px 5px rgba(0,40,255,0.1); }
+        /* Botón principal Azul Marino Pacífico */
+        .btn-marine { background: var(--brand-marine-gradient); color: white; box-shadow: 0 4px 15px rgba(13,49,83,0.2); }
+        .btn-marine:active { transform: scale(0.97); box-shadow: 0 2px 5px rgba(13,49,83,0.1); }
         
-        .btn-gold { background-color: #FFD700; color: #1d1d1f; display: none; }
+        /* Oro para canjear */
+        .btn-gold { background-color: #E6C200; color: #fff; display: none; }
         
-        .btn-outlined { background-color: transparent; border: 1.5px solid var(--border-light); color: var(--text-secondary); padding: 15px; font-size: 14px;}
+        /* Oops y Cerrar */
+        .btn-outlined { background-color: transparent; border: 1.5px solid var(--border-warm); color: var(--text-secondary); padding: 14px; font-size: 14px;}
         .btn-outlined:active { background-color: rgba(0,0,0,0.02); }
         
-        .btn-text { background: none; color: #ff5252; font-weight: 500; font-size: 14px; text-decoration: underline; padding: 10px;}
-
-        #mensajeLoader { margin-top: 20px; color: var(--brand-blue); display: none; font-weight: 600;}
+        #mensajeLoader { margin-top: 20px; color: var(--brand-marine); display: none; font-weight: 600; font-size: 14px;}
     </style>
 </head>
 <body>
 
     <div id="pantallaLogin">
         <h2>Panel de Caja</h2>
-        <p style="color: var(--text-secondary); margin-bottom: 30px;">Ingresa el PIN para continuar</p>
+        <p style="color: var(--text-secondary); margin-bottom: 30px; font-size: 14px;">Ingresa el PIN para continuar</p>
         <input type="password" id="inputPin" class="pin-input" placeholder="****" maxlength="4" inputmode="numeric">
-        <button id="btnDesbloquear" class="btn btn-blue" style="max-width: 200px;">Desbloquear</button>
-        <p id="errorPin" style="color: #ff5252; display: none; margin-top: 15px; font-size: 14px;">PIN incorrecto</p>
+        <button id="btnDesbloquear" class="btn btn-marine" style="max-width: 200px;">Desbloquear</button>
+        <p id="errorPin" style="color: #ff5252; display: none; margin-top: 15px; font-size: 13px;">PIN incorrecto</p>
     </div>
 
     <div class="main-container">
-        <div class="card-header" style="display: flex; justify-content: space-between; align-items: center; width: 100%; margin-bottom: 10px;">
-            <h1 style="margin: 0;">Club Café☕</h1>
-            <div style="font-size: 10px; color: #ccc; font-family: monospace;">BARISTA v1.0</div>
+        <div class="card-header" style="display: flex; justify-content: space-between; align-items: center; width: 100%; margin-bottom: 15px; padding: 0 5px;">
+            <h1 style="margin: 0; font-size: 22px;">Club Café☕</h1>
+            <div style="font-size: 10px; color: var(--text-secondary); font-family: monospace; opacity: 0.7;">CAJA v1.1</div>
         </div>
 
-        <div id="mensajeLoader">Buscando...</div>
+        <div id="mensajeLoader">Procesando...</div>
 
         <div id="pantallaBusqueda" class="modern-card">
-            <p style="color: var(--text-secondary); font-size: 14px; margin-top: 0; margin-bottom: 15px;">Muestra el QR del cliente a la cámara</p>
+            <p style="color: var(--text-secondary); font-size: 13px; margin-top: 0; margin-bottom: 20px;">Apunta al QR con la cámara trasera</p>
             <div id="reader"></div>
             
-            <div class="separador">o por número</div>
+            <div class="separador">o busca manualmente</div>
             
             <div class="input-manual-group">
                 <input type="tel" id="inputTelBusqueda" placeholder="Ej: 2215551234">
-                <button id="btnBuscarManual">Buscar</button>
+                <button id="btnBuscarManual" class="btn-buscar-manual">Buscar Cliente</button>
             </div>
         </div>
     </div>
@@ -175,22 +190,22 @@
                 <div class="cliente-avatar" id="uiAvatar">A</div>
                 <div class="cliente-textos">
                     <div class="cliente-nombre" id="uiNombre">Nombre...</div>
-                    <div class="cliente-tel" id="uiTel">Teléfono...</div>
+                    <span class="cliente-tel" id="uiTel">Teléfono...</span>
                 </div>
             </div>
 
             <div class="estado-sellos-container">
-                <div class="estado-sellos-texto">Estado de la tarjeta:</div>
+                <div class="estado-sellos-texto">Tarjeta actual:</div>
                 <div class="estado-sellos-numero"><span id="uiSellos">0</span> /10 <span>sellos</span></div>
             </div>
 
             <div class="btn-stack">
-                <button id="btnSumar" class="btn btn-blue">+ Sumar 1 Sello</button>
-                <button id="btnCanjear" class="btn btn-gold">🎁 Canjear y Reiniciar (0)</button>
+                <button id="btnSumar" class="btn btn-marine">+ Sumar 1 Sello</button>
+                <button id="btnCanjear" class="btn btn-gold">🎁 Entregar Premio y Reiniciar</button>
                 
-                <div style="display: flex; gap: 10px; width: 100%;">
+                <div style="display: flex; gap: 10px; width: 100%; margin-top: 5px;">
                     <button id="btnRestar" class="btn btn-outlined" style="flex: 1;">Oops (-1)</button>
-                    <button id="btnVolver" class="btn btn-outlined" style="flex: 1; border-color: #ffcccc; color: #ff5252;">Cerrar</button>
+                    <button id="btnVolver" class="btn btn-outlined" style="flex: 1; border-color: #FADBD8; color: #E74C3C;">Cerrar</button>
                 </div>
             </div>
         </div>
@@ -224,18 +239,14 @@
         const uiLoader = document.getElementById('mensajeLoader');
         const pinCorrecto = "2026";
 
-        // --- SISTEMA DE SEGURIDAD (PIN) ---
+        // --- SEGURIDAD (PIN) ---
         if (localStorage.getItem('baristaAutorizado') === 'true') {
             uiLogin.style.display = 'none';
             iniciarCamara();
         }
 
         document.getElementById('btnDesbloquear').addEventListener('click', verificarPin);
-        
-        // Desbloquear también al tocar Enter
-        document.getElementById('inputPin').addEventListener('keypress', function(e) {
-            if(e.key === 'Enter') verificarPin();
-        });
+        document.getElementById('inputPin').addEventListener('keypress', (e) => { if(e.key === 'Enter') verificarPin(); });
 
         function verificarPin() {
             const pinIngresado = document.getElementById('inputPin').value;
@@ -249,20 +260,17 @@
             }
         }
 
-        // --- CONTROL DE LA CÁMARA (TRASERA / DE ADELANTE) ---
+        // --- CÁMARA TRASERA (environment) ---
         function iniciarCamara() {
-            if (!html5QrCode) {
-                html5QrCode = new Html5Qrcode("reader");
-            }
-            // "environment" força la cámara de ADELANTE/TRASERA
+            if (!html5QrCode) { html5QrCode = new Html5Qrcode("reader"); }
             html5QrCode.start(
-                { facingMode: "environment" }, 
+                { facingMode: "environment" }, // Cámara trasera/adelante
                 { fps: 10, qrbox: { width: 250, height: 250 } },
                 onScanSuccess,
-                (errorMessage) => { }
+                () => { }
             ).catch((err) => {
                 console.error("Fallo cámara: ", err);
-                document.getElementById('reader').innerHTML = '<p style="color:red; padding:20px;">No se pudo prender la cámara.</p>';
+                document.getElementById('reader').innerHTML = '<p style="color:#E74C3C; padding:30px; font-size:12px;">No se pudo activar la cámara.</p>';
             });
         }
 
@@ -285,7 +293,7 @@
             buscarClienteEnFirebase(tel);
         });
 
-        // --- LÓGICA DE BASE DE DATOS ---
+        // --- FIREBASE ---
         async function buscarClienteEnFirebase(telefono) {
             uiBusqueda.style.display = 'none';
             uiLoader.style.display = 'block';
@@ -302,8 +310,6 @@
                     document.getElementById('uiNombre').innerText = datos.nombre;
                     document.getElementById('uiTel').innerText = telefono;
                     document.getElementById('uiSellos').innerText = puntosActuales;
-                    
-                    // Inicial de avatar
                     document.getElementById('uiAvatar').innerText = datos.nombre.charAt(0).toUpperCase();
 
                     if(puntosActuales >= 10) {
@@ -315,18 +321,18 @@
                     }
 
                     uiLoader.style.display = 'none';
-                    uiAcciones.style.display = 'flex'; // Usar Flex para el modal inferior
+                    uiAcciones.style.display = 'flex'; // Modal central centrado
                 } else {
-                    alert("No existe el cliente: " + telefono);
+                    alert("Cliente no registrado: " + telefono);
                     volverABuscar();
                 }
             } catch (error) {
-                alert("Error Firebase: " + error.message);
+                alert("Error de conexión");
                 volverABuscar();
             }
         }
 
-        // --- ACCIONES SUMAR/RESTAR/CANJEAR ---
+        // --- ACCIONES ---
         document.getElementById('btnSumar').addEventListener('click', () => modificarSellos(1));
         document.getElementById('btnRestar').addEventListener('click', () => modificarSellos(-1));
 
@@ -363,14 +369,14 @@
         }
 
         document.getElementById('btnCanjear').addEventListener('click', async () => {
-            if(confirm("¿Entregaste el premio? Volverá a 0 sellos.")) {
+            if(confirm("¿Confirmas entrega de premio? Volverá a 0 sellos.")) {
                 try {
                     const docRef = doc(db, "clientes", clienteActualId);
                     await updateDoc(docRef, { puntos: 0 }); 
-                    alert("¡Premio entregado! Tarjeta en 0.");
+                    alert("¡Premio entregado! Tarjeta reiniciada.");
                     volverABuscar(); 
                 } catch(e) {
-                    alert("Error al canjear.");
+                    alert("Error al reiniciar.");
                 }
             }
         });
