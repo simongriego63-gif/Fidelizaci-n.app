@@ -389,12 +389,21 @@
 
         document.getElementById('btnCanjear').addEventListener('click', async () => {
             if(confirm("¿Confirmas entrega de premio? Volverá a 0 sellos.")) {
-                try {
+              try {
                     const docRef = doc(db, "clientes", clienteActualId);
-                    await updateDoc(docRef, { puntos: 0 }); 
+                    
+                    // EL SISTEMA TOMA LA FECHA DEL CANJE ACÁ:
+                    const fechaAutomatica = new Date().toISOString();
+                    
+                    await updateDoc(docRef, { 
+                        puntos: 0,
+                        ultimoPremio: fechaAutomatica, // Anota cuándo fue
+                        totalPremiosCanjeados: increment(1) // Suma +1 al historial del local
+                    }); 
+                    
                     alert("¡Premio entregado! Tarjeta reiniciada.");
                     volverABuscar(); 
-                } catch(e) {
+                }} catch(e) {
                     alert("Error al reiniciar.");
                 }
             }
