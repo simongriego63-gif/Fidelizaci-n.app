@@ -13,15 +13,7 @@
             navigator.serviceWorker.register('sw.js');
         }
     </script> 
-    
-    <link rel="manifest" href="manifest-barista.json">
-    <meta name="theme-color" content="#1A4D7C">
-    <link rel="apple-touch-icon" href="icon.png">
-    <script>
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('sw.js');
-        }
-    </script>
+
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/html5-qrcode"></script>
     <style>
@@ -401,14 +393,13 @@
                         totalPremiosCanjeados: increment(1) // Suma +1 al historial del local
                     }); 
                     
-                    alert("¡Premio entregado! Tarjeta reiniciada.");
+                alert("¡Premio entregado! Tarjeta reiniciada.");
                     volverABuscar(); 
-                }} catch(e) {
+                } catch(e) {
                     alert("Error al reiniciar.");
                 }
             }
         });
-
         document.getElementById('btnVolver').addEventListener('click', volverABuscar);
 
         function volverABuscar() {
