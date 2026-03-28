@@ -133,23 +133,12 @@
                 </button>
             </div>
 
-                  <div style="display: flex; gap: 15px; margin-top: 15px; margin-bottom: 20px; align-items: center; background: var(--card-white); padding: 15px 20px; border-radius: 18px; border: 1px solid var(--border-warm); box-shadow: 0 4px 15px rgba(0,0,0,0.02);">
-                <label style="font-size: 14px; font-weight: 700; color: var(--brand-marine); margin: 0;">📅 Mes:</label>
-                <select id="inputMes" style="flex: 1; padding: 12px 15px; border-radius: 12px; border: 1.5px solid var(--border-warm); font-family: 'Poppins', sans-serif; color: var(--text-main); font-weight: 600; background-color: #fcfcfc; cursor: pointer; outline: none; font-size: 14px;">
-                    <option value="todos">Todos (Histórico completo)</option>
-                    <option value="-01-">Enero</option>
-                    <option value="-02-">Febrero</option>
-                    <option value="-03-">Marzo</option>
-                    <option value="-04-">Abril</option>
-                    <option value="-05-">Mayo</option>
-                    <option value="-06-">Junio</option>
-                    <option value="-07-">Julio</option>
-                    <option value="-08-">Agosto</option>
-                    <option value="-09-">Septiembre</option>
-                    <option value="-10-">Octubre</option>
-                    <option value="-11-">Noviembre</option>
-                    <option value="-12-">Diciembre</option>
-                </select>
+                             <div style="display: flex; gap: 10px; margin-top: 15px; margin-bottom: 20px; align-items: center; background: var(--card-white); padding: 15px; border-radius: 16px; border: 1px solid var(--border-warm); box-shadow: 0 4px 15px rgba(0,0,0,0.02);">
+                <label style="font-size: 13px; font-weight: 700; color: var(--brand-marine); margin: 0;">📅 Mes:</label>
+                
+                <input type="month" id="inputMes" style="flex: 1; padding: 10px 15px; border-radius: 12px; border: 1.5px solid var(--border-warm); font-family: 'Poppins', sans-serif; color: var(--text-main); font-weight: 600; background-color: #fcfcfc; outline: none; font-size: 14px;">
+                
+                <button class="btn-outlined" onclick="aplicarFiltro('todos')" style="background-color: rgba(26, 77, 124, 0.05); border: 1.5px solid var(--brand-marine); color: var(--brand-marine); padding: 10px 15px; font-size: 13px; border-radius: 12px; font-weight: 700; cursor: pointer; white-space: nowrap;">Ver Histórico</button>
             </div>
 
             <div id="mensajeLoader">Sincronizando base de datos...</div>
@@ -282,18 +271,21 @@
                 document.getElementById('mensajeLoader').innerText = "Hubo un error al sincronizar.";
             }
         }
-        // --- LÓGICA DE FILTRADO Y MATEMÁTICAS ---
+               // --- LÓGICA DE FILTRADO Y MATEMÁTICAS ---
         document.getElementById('inputMes').addEventListener('change', function(e) {
-            aplicarFiltro(e.target.value); // Formato que llega ahora: "-03-", "-04-", etc.
+            aplicarFiltro(e.target.value); // Formato que manda el calendario: "YYYY-MM"
         });
 
         window.aplicarFiltro = function(mesFiltro) {
+            if (mesFiltro === 'todos') {
+                document.getElementById('inputMes').value = ''; // Limpiamos la cajita
+            }
+
             let clientesFiltrados = todosLosClientes;
 
-            // Filtramos si eligió un mes específico
+            // Filtramos exacto por Año-Mes (ej: "2026-03")
             if (mesFiltro && mesFiltro !== 'todos') {
-                // Buscamos que la fecha contenga exactamente el mes (ej: "-03-")
-                clientesFiltrados = todosLosClientes.filter(c => c.fecha && c.fecha.includes(mesFiltro));
+                clientesFiltrados = todosLosClientes.filter(c => c.fecha && c.fecha.startsWith(mesFiltro));
             }
 
             // Calculamos métricas históricas
@@ -303,7 +295,7 @@
 
             clientesFiltrados.forEach(c => {
                 totalCafesCanjeados += c.premios;
-                // Los sellos históricos son los que tiene flotando (puntos) + 10 por cada premio
+                // Los sellos históricos son los flotantes + (premios * 10)
                 totalSellosHistoricos += c.puntos + (c.premios * 10);
             });
 
@@ -329,6 +321,7 @@
 
             actualizarGrafico(totalClientes, totalSellosHistoricos, totalCafesCanjeados);
         }
+
 
 
         function actualizarGrafico(clientes, sellos, canjeados) {
