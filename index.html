@@ -70,6 +70,44 @@
         .btn-crear:active { transform: scale(0.97); }
 
         /* --- PANTALLA 2: LA TARJETA DIGITAL AZUL --- */
+        /* --- EFECTO TARJETA 3D AESTHETIC --- */
+        .flip-container {
+            perspective: 1000px; width: 100%; max-width: 360px; margin: 0 auto; cursor: pointer;
+            -webkit-tap-highlight-color: transparent; /* Quita el brillo azul en celulares */
+        }
+        /* Cuando tiene la clase flipped, gira 180 grados */
+        .flip-container.flipped .flipper { transform: rotateY(180deg); }
+        
+        .flipper {
+            display: grid; /* Grid hace que el frente y el dorso midan exactamente lo mismo */
+            transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* Giro con rebote suave */
+            transform-style: preserve-3d; width: 100%;
+        }
+        
+        .front, .back {
+            grid-area: 1 / 1; /* Se apilan una sobre otra */
+            backface-visibility: hidden; -webkit-backface-visibility: hidden;
+            border-radius: 28px; width: 100%; height: 100%;
+        }
+        
+        .front { transform: rotateY(0deg); }
+        
+        /* DISEÑO DEL DORSO (LOGO AESTHETIC TIPO UNCLE DOUGH) */
+        .back {
+            transform: rotateY(180deg);
+            background: var(--brand-marine-gradient);
+            box-shadow: 0 15px 40px rgba(13,49,83,0.3);
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            color: var(--card-white); text-align: center; 
+            /* Borde interior sutil para darle textura de tarjeta real */
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .back-logo-text { font-family: 'Poppins', sans-serif; font-weight: 700; font-size: 38px; line-height: 1; margin: 0; letter-spacing: 2px;}
+        .back-subtitle { font-family: monospace; font-size: 14px; opacity: 0.7; letter-spacing: 5px; margin-top: 5px;}
+
+        @keyframes titilar { 0% {opacity:0.4;} 50% {opacity:1;} 100% {opacity:0.4;} }
+        .texto-girar { text-align: center; font-size: 12px; color: var(--text-secondary); margin-bottom: 15px; font-weight: 600; animation: titilar 2s infinite; }
+
         #pantallaTarjeta { width: 100%; max-width: 360px; display: none; }
         
         .wallet-card {
@@ -150,38 +188,62 @@
         
         <button class="btn-crear" onclick="ingresarTarjeta()">Crear / Cargar Tarjeta</button>
     </div>
-
     <div id="pantallaTarjeta">
-        <div class="wallet-card">
-            <div class="card-header">
-                <div class="logo">TU CAFÉ™</div>
-                <div class="user-info">
-                    <div class="user-nickname" id="displayNombre">...</div>
-                    <span class="user-tel-label" id="displayTelLabel">******0000</span>
+        <p class="texto-girar">👉 Toca la tarjeta para girarla</p>
+        
+        <div class="flip-container" onclick="this.classList.toggle('flipped')">
+            <div class="flipper">
+                
+                <div class="front">
+                    <div class="wallet-card" style="margin: 0; height: 100%;">
+                        <div class="card-header">
+                            <div class="logo">CLUB CAFÉ</div>
+                            <div class="user-info">
+                                <div class="user-nickname" id="displayNombre">...</div>
+                                <span class="user-tel-label" id="displayTelLabel">******0000</span>
+                            </div>
+                        </div>
+                        
+                        <div class="stamps-container">
+                            <div class="stamps-grid" id="gridSellos"></div>
+                            <p class="stamps-text">Completa 10 cangrejos y recibe una bebida de regalo.</p>
+                        </div>
+                        
+                        <div class="info-row">
+                            <div class="info-group">
+                                <div class="info-label">Estado Premio🎁</div>
+                                <div class="info-value" id="displayPremio">...</div>
+                            </div>
+                            <div class="info-group right">
+                                <div class="info-label">Cangrejos</div>
+                                <div class="info-value info-value-points"><span id="displayPuntos">0</span>/10</div>
+                            </div>
+                        </div>
+                        
+                        <div class="qr-section">
+                            <div class="qr-box">
+                                <img id="qrImage" src="" alt="QR Cliente">
+                            </div>
+                            <div class="user-id">ID ÚNICO DE CLIENTE</div>
+                        </div>
+                    </div>
                 </div>
-            </div>
-            
-            <div class="stamps-container">
-                <div class="stamps-grid" id="gridSellos"></div>
-                <p class="stamps-text">Completa 10 tazas y recibe una bebida de regalo.</p>
-            </div>
-            
-            <div class="info-row">
-                <div class="info-group">
-                    <div class="info-label">Estado Premio🎁</div>
-                    <div class="info-value" id="displayPremio">...</div>
+
+                <div class="back">
+                    <svg width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="margin-bottom: 25px; opacity: 0.9;">
+                        <path fill="none" stroke="#ffffff" stroke-width="2.5" d="M30,35 Q50,25 70,35 T70,75 Q50,85 30,75 Z" />
+                        <circle fill="#ffffff" cx="40" cy="28" r="4"/>
+                        <circle fill="#ffffff" cx="60" cy="28" r="4"/>
+                        <path fill="none" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" d="M15,40 Q25,30 35,40 M15,55 H30 M15,70 Q25,80 35,70" /> 
+                        <path fill="none" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" d="M85,40 Q75,30 65,40 M85,55 H70 M85,70 Q75,80 65,70" /> 
+                        <path fill="none" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" d="M30,20 L20,10 Q10,20 20,30 L30,20 Z" /> 
+                        <path fill="none" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" d="M70,20 L80,10 Q90,20 80,30 L70,20 Z" /> 
+                    </svg>
+                    
+                    <h2 class="back-logo-text">CLUB CAFÉ</h2>
+                    <div class="back-subtitle">BAKERY</div>
                 </div>
-                <div class="info-group right">
-                    <div class="info-label">Tazas Servidas</div>
-                    <div class="info-value info-value-points"><span id="displayPuntos">0</span>/10</div>
-                </div>
-            </div>
-            
-            <div class="qr-section">
-                <div class="qr-box">
-                    <img id="qrImage" src="" alt="QR Cliente">
-                </div>
-                <div class="user-id">ID ÚNICO DE CLIENTE</div>
+
             </div>
         </div>
         
